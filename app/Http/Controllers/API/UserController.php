@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -46,5 +47,45 @@ class UserController extends Controller
                'error' => $error
            ],'Authentication Failed', 500);
        }
+    }
+
+    public function logout(Request $request){
+        try{
+            //validate
+            $request->validate([
+                'email' => 'required|email|string',
+                'password'=> 'required'
+            ]);
+
+            $credentials = request(['email', 'password']);
+
+            //cek login
+            if(!Auth::attempt($request)){
+                ResponseFormatter::error([
+                    'message' => 'UnAuthorized'
+                ],'Authentication Failed', 500);
+            }
+
+            //ambil user dan cocokkan dengan password
+            $user = User::where('email', $request->email)->first();
+
+            if(!Hash::check($request->password, $user->password)){
+                throw new \Exception("Invalid Credentials"); 
+            }
+
+            $tokenResult = $user->createToken('authToken')->plainTextToken;
+
+            return ResponseFormatter::success([
+                'access_token' => $tokenResult,
+                'token_type' => 'Bearer',
+                'user' => $user
+            ], 'Authenticated');
+
+
+        }catch (\Exception $error) {
+            ResponseFormatter::error([
+                'message' => 'something went wrong'
+            ],'Authentication Failed', 500);
+        }
     }
 }
