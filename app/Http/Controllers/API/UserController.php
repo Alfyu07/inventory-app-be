@@ -94,8 +94,8 @@ class UserController extends Controller
         $token = $request->user()->currentAccessToken()->delete();
         return ResponseFormatter::success($token, 'Token Revoked');
     }
-    
-    public function update(Request $request){
+
+    public function updateProfile(Request $request){
         $date = $request->all();
         $user = Auth::user();
 
