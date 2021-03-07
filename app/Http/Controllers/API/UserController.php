@@ -49,7 +49,7 @@ class UserController extends Controller
        }
     }
 
-    public function logout(Request $request){
+    public function login(Request $request){
         try{
             //validate
             $request->validate([
@@ -60,7 +60,7 @@ class UserController extends Controller
             $credentials = request(['email', 'password']);
 
             //cek login
-            if(!Auth::attempt($request)){
+            if(!Auth::attempt($credentials)){
                 ResponseFormatter::error([
                     'message' => 'UnAuthorized'
                 ],'Authentication Failed', 500);
