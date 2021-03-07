@@ -96,7 +96,7 @@ class UserController extends Controller
     }
 
     public function updateProfile(Request $request){
-        $date = $request->all();
+        $data = $request->all();
         $user = Auth::user();
 
         $user->update($data);
