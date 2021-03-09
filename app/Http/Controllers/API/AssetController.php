@@ -5,11 +5,57 @@ namespace App\Http\Controllers\API;
 use App\Models\Asset;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
 class AssetController extends Controller
-{
+{   
+    //todo perbaiki fungsi asset all
+    public function all(Request $request){
+        $id = $request->input('id');
+        $limit = $request->input('limit', 6);
+        $name = $request->input('name');
+        $sort = $request->input('sort');
+
+
+        if($sort){
+            if($sort == 'terbaru'){
+                $asset = DB::table('assets')->orderByDesc('purchase_date')->paginate($limit);
+            }else if($sort == 'terlama'){
+                $asset = DB::table('assets')->orderBy('purchase_date')->paginate($limit);
+            }else if($sort == 'kondisi'){
+                $asset = DB::table('assets')->orderBy('condition')->paginate($limit);
+            }
+
+            return ResponseFormatter::success($asset, 'Data list barang berhasil diambil');
+        }
+
+        if($id){
+            $asset = Asset::find($id);
+
+            if($asset){
+                return ResponseFormatter::success($asset, 'Data Asset berhasil diambil');
+            }else{
+                return ResponseFormatter::error(
+                    null, 'Data asset tidak ada', 404
+                );
+            }
+        }
+
+        //cari berdasarkan nama
+        $asset = Asset::query();
+        if($name){
+            $asset->where('name', 'like', '%'. $name . '%');
+        }
+
+
+        return ResponseFormatter::success(
+            $asset->paginate($limit),
+            'Data list barang berhasil diambil'
+        );
+    }
+
     public function register(Request $request){
         try {
             $request->validate([

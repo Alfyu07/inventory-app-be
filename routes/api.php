@@ -21,10 +21,12 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('user', [UserController::class, 'updateProfile']);
     Route::post('logout', [UserController::class, 'logout']);
     Route::post('asset', [AssetController::class, 'register']);
-
+    
+    Route::get('asset', [AssetController::class, 'all']);
     Route::post('asset/{id}', [AssetController::class, 'update']);
     Route::post('asset/photo/{id}', [AssetController::class, 'updatePhoto']);
     Route::post('asset/delete/{id}', [AssetController::class, 'delete']);
+
 });
 
 //route dibawah yang bisa digunakan oleh user saat belum login.
