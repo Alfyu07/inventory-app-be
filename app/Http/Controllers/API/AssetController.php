@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
 use App\Models\Asset;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class AssetController extends Controller
@@ -95,10 +97,39 @@ class AssetController extends Controller
     }
 
     public function update(Request $request, $id){
-        $asset = Asset::findOrFail($id);
-        $asset->update($request->all());
+        try{
+            $request->validate([
+                'name' => 'required|string',
+                'condition' => 'required|string',
+                'purchase_date' => 'date_format:Y-m-d',
+                'image' => 'file|image|mimes:png,jpg|max:5120' 
+            ]);
+            
+            $asset = Asset::find($id);
+            
+            if($asset){
+                $asset->update($request->all());
+                if($asset->picture_path != null){
+                    Storage::disk('public')->delete($asset->picture_path);
+                }
+                $image = $request->file('image');
+                if($image){
+                    $imageName = time(). '.'.$image->extension();
+                    $image = $image->storeAs('uploads/assets', $imageName, 'public');
+                }
+                $asset->picture_path = ($image) ? : $asset->picture_path;
+                $asset->update();
+                return ResponseFormatter::success($asset, 'Asset updated');
+            }else{
+                ResponseFormatter::error(null, 'Asset not found', 404);
+            }
         
-        return ResponseFormatter::success($asset, 'Asset Updated');
+        }catch (\Exception $error) {
+            return ResponseFormatter::error([
+                'message' => 'Something went wrong', 
+                'error' => $error,
+            ], 'Asset Creating Failed', 500);
+        }
     }
 
     public function delete($id){
