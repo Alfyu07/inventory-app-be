@@ -15,6 +15,7 @@ class CreateAssetsTable extends Migration
     {
         Schema::create('assets', function (Blueprint $table) {
             $table->id();
+            $table->integer('user_id');
             $table->string('name')->nullable();
             $table->string('condition')->default('BAGUS');
             $table->dateTime('purchase_date');
@@ -23,7 +24,6 @@ class CreateAssetsTable extends Migration
             $table->text('description')->nullable();
             $table->text('picture_path')->nullable();
 
-            $table->softDeletes();
             $table->timestamps();
         });
     }
