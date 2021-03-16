@@ -15,6 +15,7 @@ class Asset extends Model
      * @var array
      */
     protected $fillable = [
+        'user_id',
         'name',
         'condition',
         'purchase_date',
@@ -24,11 +25,18 @@ class Asset extends Model
         'picture_path'
     ];
 
+
+    public function user(){
+        $this->belongsTo(User::class);
+    }
+
      /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
+
+
     protected $casts = [
         'purchase_date' => 'datetime:Y-m-d',
     ];

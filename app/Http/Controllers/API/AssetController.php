@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class AssetController extends Controller
@@ -61,19 +62,26 @@ class AssetController extends Controller
             $request->validate([
                'name' => 'required|string',
                'condition' => 'required|string',
-               'purchase_date' => 'date_format:Y-m-d'
+               'purchase_date' => 'date_format:Y-m-d',
+               'image' => 'file|image|mimes:png,jpg|max:5120'   
             ]);
-
+            $user = Auth::user();
+            $image = $request->file('image');
+            if($image){                
+                $imageName = time(). '.'.$image->extension();
+                $image = $image->storeAs('uploads/assets', $imageName, 'public');
+            }
             //insert new user
             $asset = Asset::create([
+                'user_id'=> $user->id,
                 'name' => $request->name,
                 'condition' => $request->condition,
                 'purchase_date' => $request->purchase_date,
                 'price' => $request->price,
                 'location' => $request->location,
-                'description' => $request->description
+                'description' => $request->description,
+                'picture_path' => ($image) ? $image : null,
             ]);
-            
 
             return ResponseFormatter::success([
                 'asset' => $asset
@@ -89,7 +97,7 @@ class AssetController extends Controller
     public function update(Request $request, $id){
         $asset = Asset::findOrFail($id);
         $asset->update($request->all());
-
+        
         return ResponseFormatter::success($asset, 'Asset Updated');
     }
 

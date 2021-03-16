@@ -23,6 +23,9 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function asset(){
+        $this->hasMany(Asset::class, 'user_id', 'id');
+    }
     /**
      * The attributes that should be hidden for arrays.
      *
