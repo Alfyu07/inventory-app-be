@@ -17,8 +17,8 @@ class CreateAssetsTable extends Migration
             $table->id();
             $table->integer('user_id');
             $table->string('name')->nullable();
-            $table->string('condition')->default('BAGUS');
-            $table->dateTime('purchase_date');
+            $table->string('condition')->default('Bagus');
+            $table->string('purchase_date');
             $table->integer('price')->nullable();
             $table->string('location')->nullable();
             $table->text('description')->nullable();

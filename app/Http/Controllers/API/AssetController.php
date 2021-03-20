@@ -64,8 +64,8 @@ class AssetController extends Controller
             $request->validate([
                'name' => 'required|string',
                'condition' => 'required|string',
-               'purchase_date' => 'date_format:Y-m-d',
-               'image' => 'file|image|mimes:png,jpg|max:5120'   
+               'purchase_date' => 'required|string',
+               'image' => 'file|image|mimes:png,jpg|max:5120' 
             ]);
             $user = Auth::user();
             $image = $request->file('image');
@@ -79,7 +79,7 @@ class AssetController extends Controller
                 'name' => $request->name,
                 'condition' => $request->condition,
                 'purchase_date' => $request->purchase_date,
-                'price' => $request->price,
+                'price' => (int)$request->price,
                 'location' => $request->location,
                 'description' => $request->description,
                 'picture_path' => ($image) ? $image : null,
@@ -101,7 +101,7 @@ class AssetController extends Controller
             $request->validate([
                 'name' => 'required|string',
                 'condition' => 'required|string',
-                'purchase_date' => 'date_format:Y-m-d',
+                'purchase_date' => 'required|string',
                 'image' => 'file|image|mimes:png,jpg|max:5120' 
             ]);
             
@@ -109,7 +109,7 @@ class AssetController extends Controller
             
             if($asset){
                 $asset->update($request->all());
-                if($asset->picture_path != null){
+                    if($asset->picture_path != null){
                     Storage::disk('public')->delete($asset->picture_path);
                 }
                 $image = $request->file('image');
@@ -141,10 +141,11 @@ class AssetController extends Controller
             ], 'update failed', 500);
         }
         $asset->delete();
-        return ResponseFormatter::success($asset, 'Asset Deleted');
+        return ResponseFormatter::success([], 'Asset deleted successfully');
     }
 
-    public function updatePhoto(Request $request, $id){
+
+    public function updatePhoto(Request $request){
         $validator = Validator::make($request->all(),[
             'file' => 'required|image|max:2048'
         ]);
