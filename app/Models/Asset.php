@@ -22,7 +22,8 @@ class Asset extends Model
         'price',
         'location',
         'description',
-        'picture_path'
+        'picture_path',
+        'hash'
     ];
 
 

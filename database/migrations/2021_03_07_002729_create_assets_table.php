@@ -23,6 +23,8 @@ class CreateAssetsTable extends Migration
             $table->string('location')->nullable();
             $table->text('description')->nullable();
             $table->text('picture_path')->nullable();
+            $table->text('hash')->nullable();
+
 
             $table->timestamps();
         });
