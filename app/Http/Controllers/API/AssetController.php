@@ -11,13 +11,15 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+
 
 class AssetController extends Controller
 {   
     //todo perbaiki fungsi asset all
     public function all(Request $request){
         $id = $request->input('id');
-        $limit = $request->input('limit', 6);
+        $limit = $request->input('limit', 0);
         $name = $request->input('name');
         $sort = $request->input('sort');
 
@@ -73,6 +75,7 @@ class AssetController extends Controller
                 $imageName = time(). '.'.$image->extension();
                 $image = $image->storeAs('uploads/assets', $imageName, 'public');
             }
+
             //insert new user
             $asset = Asset::create([
                 'user_id'=> $user->id,
@@ -84,7 +87,10 @@ class AssetController extends Controller
                 'description' => $request->description,
                 'picture_path' => ($image) ? $image : null,
             ]);
-
+            
+            $hashed = Hash::make($asset->id.$asset->name);
+            $asset->hash = $hashed;
+            
             return ResponseFormatter::success([
                 'asset' => $asset
             ],'Asset Created');
