@@ -81,7 +81,6 @@ class UserController extends Controller
             return ResponseFormatter::success([
                 'access_token' => $tokenResult,
                 'token_type' => 'Bearer',
-                'user' => $user
             ], 'Authenticated');
 
 
@@ -91,6 +90,7 @@ class UserController extends Controller
             ],'Authentication Failed', 500);
         }
     }
+    
 
     //fungsi untuk Logout
     public function logout(Request $request){
