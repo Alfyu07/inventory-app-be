@@ -53,29 +53,31 @@ class UserController extends Controller
     }
 
     public function login(Request $request){
-        try{
-            //validate
+        try {
+            //proses validasi inputan request
             $request->validate([
-                'email' => 'required|email|string',
-                'password'=> 'required'
+                'email' => ['required'],
+                'password' => 'required'
             ]);
 
+            //mengecek credentials (login)
             $credentials = request(['email', 'password']);
 
-            //cek login
-            if(!Auth::attempt($credentials)){
-                ResponseFormatter::error([
-                    'message' => 'UnAuthorized'
-                ],'Authentication Failed', 500);
+            //jika login gagal  
+            if (!Auth::attempt($credentials)) {
+                return ResponseFormatter::error([
+                    'message' => 'Invalid email or password',
+                ], 'Authentication Failed', 400);
             }
 
-            //ambil user dan cocokkan dengan password
+            //jika gagal tidak sesuai maka beri error
             $user = User::where('email', $request->email)->first();
 
-            if(!Hash::check($request->password, $user->password)){
-                throw new \Exception("Invalid Credentials"); 
+            if (!Hash::check($request->password, $user->password)) {
+                throw new \Exception('Invalid Credentials');
             }
 
+            //jika berhasil maka loginkan
             $tokenResult = $user->createToken('authToken')->plainTextToken;
 
             return ResponseFormatter::success([
@@ -83,12 +85,11 @@ class UserController extends Controller
                 'token_type' => 'Bearer',
                 'user' => $user
             ], 'Authenticated');
-
-
-        }catch (\Exception $error) {
-            ResponseFormatter::error([
-                'message' => 'something went wrong'
-            ],'Authentication Failed', 500);
+        } catch (Exception $error) {
+            return ResponseFormatter::error([
+                'message' => 'Something went wrong',
+                'error' => $error
+            ], 'Authentication Failed', 500);
         }
     }
 
