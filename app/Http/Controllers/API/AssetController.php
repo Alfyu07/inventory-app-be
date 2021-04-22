@@ -21,6 +21,7 @@ class AssetController extends Controller
         $id = $request->input('id');
         $limit = $request->input('limit', 0);
         $name = $request->input('name');
+        $hash = $request->input('hash');
         $sort = $request->input('sort');
 
 
@@ -54,6 +55,9 @@ class AssetController extends Controller
             $asset->where('name', 'like', '%'. $name . '%');
         }
 
+        if($hash){
+            $asset->where('hash', 'like', '%'. $name . '%');
+        }
 
         return ResponseFormatter::success(
             $asset->paginate($limit),
