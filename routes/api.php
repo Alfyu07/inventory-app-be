@@ -23,6 +23,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('asset/register', [AssetController::class, 'register']);
     
     Route::get('asset', [AssetController::class, 'all']);
+    Route::get('asset/hash', [AssetController::class, 'getAssetByHash']);
+
     Route::post('asset/{id}', [AssetController::class, 'update']);
     Route::post('asset/photo/{id}', [AssetController::class, 'updatePhoto']);
     Route::delete('asset/delete/{id}', [AssetController::class, 'delete']);

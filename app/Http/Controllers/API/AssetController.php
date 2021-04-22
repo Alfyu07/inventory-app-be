@@ -64,6 +64,25 @@ class AssetController extends Controller
             'Data list barang berhasil diambil'
         );
     }
+    public function getAssetByHash(Request $request){
+        $request->validate([
+            'hash' => 'string'
+        ]);
+        
+        $hash = $request->input('hash');
+        //cari berdasarkan nama
+        $asset = Asset::where('hash',$hash)->first();
+        if($asset){
+            return ResponseFormatter::success(
+                $asset,
+                'success'
+            );
+        }
+        return ResponseFormatter::error(
+            null,
+            'failed'
+        );
+    }
 
     public function register(Request $request){
         try {
